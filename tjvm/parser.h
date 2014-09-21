@@ -1,6 +1,8 @@
 #ifndef JCLASSEH
 #define JCLASSEH
 
-JCLASS* lecture(char *fichier);
+#include "jenv.h"
+
+JCLASS* lecture(char *fichier,JENV *env);
 
 #endif

@@ -48,6 +48,12 @@
     <ClInclude Include="context.h">
       <Filter>Fichiers d%27en-tête</Filter>
     </ClInclude>
+    <ClInclude Include="jerror.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
+    <ClInclude Include="jenv.h">
+      <Filter>Fichiers d%27en-tête</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tjvm.c">
@@ -75,6 +81,12 @@
       <Filter>Fichiers sources</Filter>
     </ClCompile>
     <ClCompile Include="context.c">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="jerror.c">
+      <Filter>Fichiers sources</Filter>
+    </ClCompile>
+    <ClCompile Include="jenv.c">
       <Filter>Fichiers sources</Filter>
     </ClCompile>
   </ItemGroup>

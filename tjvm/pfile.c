@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include "pfile.h"
 #include "outils.h"
+#include "jenv.h"
 
 
 int file_valide(FILEBUFFER *f)
@@ -17,17 +18,21 @@ int file_valide(FILEBUFFER *f)
 	return 1;
 }
 
-FILEBUFFER *readFile(char *filename)
+FILEBUFFER *readFile(char *filename,JENV *env)
 {
 	FILEBUFFER *res=NULL;
 	int len=0;
 	FILE *fp=NULL;
 	size_t bytes_read=0;
 
+	assert(filename!=NULL);
+	assert(env!=NULL);
+
 	fp=fopen(filename, "rb");
 	if(fp==NULL)
 	{
-		perror("Error in opening file");
+		//perror("Error in opening file");
+		tjvm_env_add_error_c(env,"Error in opening file");
 		return NULL;
 	}
 
@@ -37,13 +42,15 @@ FILEBUFFER *readFile(char *filename)
 	
 	if(len==0)
 	{
+		tjvm_env_add_error_c(env,"Error in file : invalide size");
 		return NULL;
 	}
 
 	if( ferror(fp) )
     {
-		perror("Error in reading file");
-        printf("Error in reading from file : %s\n",filename);
+		//perror("Error in reading file");
+        //printf("Error in reading from file : %s\n",filename);
+		tjvm_env_add_error_c(env,"Error in reading file");
 		return NULL;
     }
 	/*else if(feof(fp))
@@ -69,8 +76,9 @@ FILEBUFFER *readFile(char *filename)
 	
 	if( ferror(fp) )
     {
-		perror("Error in reading file");
-        printf("Error in reading from file : %s\n",filename);
+		//perror("Error in reading file");
+        //printf("Error in reading from file : %s\n",filename);
+		tjvm_env_add_error_c(env,"Error in reading file");
 		return NULL;
     }
 	/*else if(!feof(fp))
@@ -84,14 +92,19 @@ FILEBUFFER *readFile(char *filename)
 	return res;
 }
 
-uint8_t read_uint8(FILEBUFFER *f)
+uint8_t read_uint8(FILEBUFFER *f,JENV *env)
 {
 	uint8_t val,tmp;
 	unsigned int pos;
 	char *p;
 	uint8_t *buf;
+	assert(env!=NULL);
 	assert(f!=NULL);
-	assert(file_len_dispo(f)>=1);
+	if(file_len_dispo(f)<1)
+	{
+		tjvm_env_add_error(env,"Error in file : invalide size");
+		return 0;
+	}
 	//assert(f->pos+1<f->len);
 	pos=f->pos;
 	//buf=(uint8_t *)(f->buf+pos);
@@ -106,14 +119,19 @@ uint8_t read_uint8(FILEBUFFER *f)
 	return val;
 }
 
-uint16_t read_uint16(FILEBUFFER *f)
+uint16_t read_uint16(FILEBUFFER *f,JENV *env)
 {
 	uint16_t val,tmp;
 	unsigned int pos;
 	char *p;
 	uint16_t *buf;
+	assert(env!=NULL);
 	assert(f!=NULL);
-	assert(file_len_dispo(f)>=2);
+	if(file_len_dispo(f)<2)
+	{
+		tjvm_env_add_error_c(env,"Error in file : invalide size");
+		return 0;
+	}
 	//assert(f->pos+2<f->len);
 	pos=f->pos;
 	buf=(uint16_t *)(f->buf+pos);
@@ -127,14 +145,19 @@ uint16_t read_uint16(FILEBUFFER *f)
 	return val;
 }
 
-uint32_t read_uint32(FILEBUFFER *f)
+uint32_t read_uint32(FILEBUFFER *f,JENV *env)
 {
 	uint32_t val,tmp;
 	unsigned int pos;
 	char *p;
 	uint32_t *buf;
+	assert(env!=NULL);
 	assert(f!=NULL);
-	assert(file_len_dispo(f)>=4);
+	if(file_len_dispo(f)<4)
+	{
+		tjvm_env_add_error_c(env,"Error in file : invalide size");
+		return 0;
+	}
 	//assert(f->pos+4<f->len);
 	pos=f->pos;
 	buf=(uint32_t *)(f->buf+pos);
@@ -148,14 +171,20 @@ uint32_t read_uint32(FILEBUFFER *f)
 	return val;
 }
 
-uint64_t read_uint64(FILEBUFFER *f)
+uint64_t read_uint64(FILEBUFFER *f,JENV *env)
 {
 	uint64_t val,tmp;
 	unsigned int pos;
 	char *p;
 	uint64_t *buf;
+	assert(env!=NULL);
 	assert(f!=NULL);
-	assert(file_len_dispo(f)>=8);
+	if(file_len_dispo(f)<8)
+	{
+		tjvm_env_add_error_c(env,"Error in file : invalide size");
+		return 0;
+	}
+
 	//assert(f->pos+8<f->len);
 	pos=f->pos;
 	buf=(uint64_t *)(f->buf+pos);
@@ -170,15 +199,20 @@ uint64_t read_uint64(FILEBUFFER *f)
 }
 
 
-char *read_char(FILEBUFFER *f,int len)
+char *read_char(FILEBUFFER *f,int len,JENV *env)
 {
 	uint64_t val,tmp;
 	unsigned int pos;
 	char *p;
 	char *buf,*buf2;
+	assert(env!=NULL);
 	assert(f!=NULL);
 	assert(len>0);
-	assert(file_len_dispo(f)>=len);
+	if(file_len_dispo(f)<len)
+	{
+		tjvm_env_add_error_c(env,"Error in file : invalide size");
+		return 0;
+	}
 	//assert(f->pos+len<=f->len);
 	pos=f->pos;
 	buf=(f->buf+pos);

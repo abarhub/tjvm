@@ -77,6 +77,8 @@
   <ItemGroup>
     <ClInclude Include="context.h" />
     <ClInclude Include="jclasse.h" />
+    <ClInclude Include="jenv.h" />
+    <ClInclude Include="jerror.h" />
     <ClInclude Include="jstr.h" />
     <ClInclude Include="opcode.h" />
     <ClInclude Include="opcode2.h" />
@@ -88,6 +90,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="context.c" />
+    <ClCompile Include="jenv.c" />
+    <ClCompile Include="jerror.c" />
     <ClCompile Include="jstr.c" />
     <ClCompile Include="opcode.c" />
     <ClCompile Include="opcode2.c" />

@@ -16,7 +16,12 @@ JSTR* createJStr(char *buf,int len,enum EEncodage encodage_src);
 JSTR* createJStrC(char *buf);
 
 void jstrprint(JSTR *str);
+void jstrprintnl(JSTR *str);
 
 int jstrEquals(JSTR *s,JSTR *s2);
+
+void jstrFree(JSTR *s);
+
+void jstrAddC(char *s);
 
 #endif

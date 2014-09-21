@@ -8,6 +8,7 @@
 #include "opcode2.h"
 #include "context.h"
 #include "opcode.h"
+#include "jenv.h"
 
 
 int debug=1;
@@ -196,7 +197,7 @@ static uint32_t get_var_local(JFRAME *frame,uint16_t no_var)
 	return val;
 }
 
-void exec(JCLASS *classe,JMETHOD_INFO *tmp)
+void exec(JCLASS *classe,JMETHOD_INFO *tmp,JENV *env)
 {
 	ATTRIBUTE_INFO *attr,*attr_code;
 	int i,pos;
@@ -208,9 +209,12 @@ void exec(JCLASS *classe,JMETHOD_INFO *tmp)
 
 	assert(classe!=NULL);
 	assert(tmp!=NULL);
+	assert(env!=NULL);
+
 	if(tmp->attributes_count==0)
 	{
-		printf("error: pas de code");
+		//printf("error: pas de code");
+		tjvm_env_add_error_c(env,"Pas de code");
 	}
 	else
 	{
@@ -266,14 +270,15 @@ void exec(JCLASS *classe,JMETHOD_INFO *tmp)
 	}
 }
 
-void run2(JCLASS *classe)
+void run2(JCLASS *classe,JENV *env)
 {
 	JMETHOD_INFO *tmp;
 	assert(classe!=NULL);
+	assert(env!=NULL);
 
 	tmp=trouve_methode(classe,createJStrC("test1"));
 	assert(tmp!=NULL);
 	printf("methode:%d\n",tmp->name_index);
-	exec(classe,tmp);
+	exec(classe,tmp,env);
 	return;
 }

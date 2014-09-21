@@ -9,6 +9,8 @@
 #include "jclasse.h"
 #include "parser.h"
 #include "run.h"
+#include "jerror.h"
+#include "jenv.h"
 
 
 //int _tmain(int argc, _TCHAR* argv[])
@@ -16,12 +18,25 @@ int main(int argc, char* argv[])
 {
 	char *fichier="..\\java\\Hello.class";//"C:\\Users\\Alain\\Documents\\Visual Studio 2010\\Projects\\tjvm\\java\\Hello.class";
 	JCLASS* res;
+	//JERROR *err;
+	JENV *env;
 
-	res=lecture(fichier);
+	//err=tjvm_create_error();
+	env=tjvm_create_env();
 
-	if(res!=NULL)
+	res=lecture(fichier,env);
+
+	if(tjvm_env_is_error(env))
 	{
-		run2(res);
+		jstrprintnl(createJStrC("Erreur du parsing :"));
+		tjvm_print_error(env->err);
+	}
+	else
+	{
+		if(res!=NULL)
+		{
+			run2(res,env);
+		}
 	}
 
 	return 0;

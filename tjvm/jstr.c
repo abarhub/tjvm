@@ -44,7 +44,33 @@ static int len_char(char c)
 	return len;
 }
 
-JSTR* createJStr(char *buf,int len,enum EEncodage encodage_src)
+size_t len_utf8_to_utf16(char *buf,size_t len)
+{
+	size_t len2,len3;
+	int i,j,pos;
+	unsigned short code_unicode;
+	unsigned char c,c2,c3,c4;
+	unsigned short *p;
+
+	len2=0;
+	for(i=0;i<len;i++)
+	{
+		c=buf[i];
+		len3=len_char(c);
+		assert(len3>0);
+		if(len3==1||len3==2||len3==3)
+		{
+			len2+=2;
+		}
+		else if(len3==4)
+		{
+			len2+=4;
+		}
+	}
+	return len2;
+}
+
+JSTR* createJStr(char *buf,size_t len,enum EEncodage encodage_src)
 {
 	JSTR *tmp;
 	char *tmp2;
@@ -59,7 +85,8 @@ JSTR* createJStr(char *buf,int len,enum EEncodage encodage_src)
 		unsigned short code_unicode;
 		unsigned char c,c2,c3,c4;
 		unsigned short *p;
-		len2=0;
+		len2=len_utf8_to_utf16(buf,len);
+		/*len2=0;
 		for(i=0;i<len;i++)
 		{
 			c=buf[i];
@@ -73,7 +100,7 @@ JSTR* createJStr(char *buf,int len,enum EEncodage encodage_src)
 			{
 				len2+=4;
 			}
-		}
+		}*/
 		tmp2=(char*)calloc(len2+1,sizeof(char));
 		//strncpy(tmp2,buf,len2);
 		pos=0;
@@ -96,7 +123,7 @@ JSTR* createJStr(char *buf,int len,enum EEncodage encodage_src)
 
 				c &= ~((1 << 8)+(1 << 7));
 				c2 &= ~(1 << 8);
-				code_unicode=c<<7+c2;
+				code_unicode=(c<<7)+c2;
 				
 				assert(code_unicode>0x7F);
 
@@ -112,7 +139,7 @@ JSTR* createJStr(char *buf,int len,enum EEncodage encodage_src)
 				c &= ~((1 << 8)+(1 << 7)+(1 << 6));
 				c2 &= ~(1 << 8);
 				c3 &= ~(1 << 8);
-				code_unicode=c<<13+c2<<7+c3;
+				code_unicode=(c<<13)+(c2<<7)+c3;
 
 				p=(unsigned short *)(tmp2+pos);
 				*p=code_unicode;
@@ -129,12 +156,12 @@ JSTR* createJStr(char *buf,int len,enum EEncodage encodage_src)
 				c2 &= ~(1 << 8);
 				c3 &= ~(1 << 8);
 				c4 &= ~(1 << 8);
-				code=c<<3+c2>>4;
+				code=(c<<3)+(c2>>4);
 				code--;
-				code=code<<5+((c2<<4)>>4);
-				code=code<<7+c3;
-				code=code<<7+c4;
-				code_unicode=(1 << 16)+(1 << 15)+(1 << 13)+(1 << 12)+code>>10;
+				code=(code<<5)+((c2<<4)>>4);
+				code=(code<<7)+c3;
+				code=(code<<7)+c4;
+				code_unicode=(1 << 16)+(1 << 15)+(1 << 13)+(1 << 12)+(code>>10);
 
 				p=(unsigned short *)(tmp2+pos);
 				*p=code_unicode;
@@ -183,13 +210,42 @@ void jstrprint(JSTR *str)
 {
 	int i;
 	wchar_t c;
+
+	assert(str!=NULL);
+
 	//printf("%s",str->buf);
 	//wprintf((wchar_t*)str->buf);
 	for(i=0;i<str->len;i+=2)
 	{
-		c=*((wchar_t*)(str->buf+i));
+		c=*((uint16_t*)(str->buf+i));
 		putwchar(c);
 	}
+}
+
+void jstrprintnl(JSTR *str)
+{
+	JSTR *nl;
+	assert(str!=NULL);
+
+	jstrprint(str);
+
+	nl=createJStrC("\n");
+
+	jstrprint(nl);
+
+	jstrFree(nl);
+}
+
+void jstrFree(JSTR *s)
+{
+	assert(s!=NULL);
+	
+	if(s->buf!=NULL)
+	{
+		free(s->buf);
+		s->buf=NULL;
+	}
+	free(s);
 }
 
 /*
@@ -223,3 +279,9 @@ int jstrEquals(JSTR *s,JSTR *s2)
 	}
 	return 1;
 }
+
+void jstrAddC(char *s)
+{
+
+}
+
