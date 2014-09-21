@@ -10,31 +10,43 @@ void affiche_opcode(uint8_t *buf,int len);
 
 static void push_stack_val(JFRAME *frame,int32_t val)
 {
+	TYPEVALSTACK *p;
 	assert(frame!=NULL);
 	assert(frame->pos_stack>=0);
 	assert(frame->pos_stack<frame->nb_stack);
-	frame->stack[frame->pos_stack]=val;
-	frame->stack_val[frame->pos_stack].type_val=EInt32Stack;
+
+	p=&(frame->stack_val[frame->pos_stack]);
+	assert(p->type_val==EInt32Stack||p->type_val==0);
+	p->val_int=val;
+	p->type_val=EInt32Stack;
 	frame->pos_stack++;
 }
 
 static int32_t pop_stack(JFRAME *frame)
 {
 	int32_t val;
+	TYPEVALSTACK *p;
 	assert(frame!=NULL);
 	assert(frame->pos_stack>0);
-	val=frame->stack[frame->pos_stack-1];
+	p=&(frame->stack_val[frame->pos_stack-1]);
+	assert(p->type_val==EInt32Stack);
+	val=p->val_int;
 	frame->pos_stack--;
 	return val;
 }
 
 static void set_var_local(JFRAME *frame,uint16_t no_var,uint32_t val)
 {
+	TYPEVALSTACK *p;
 	assert(frame!=NULL);
 	assert(frame->nb_var_local>0);
 	assert(no_var>=0);
 	assert(no_var<frame->nb_var_local);
-	frame->var_local[no_var]=val;
+	//frame->var_local[no_var]=val;
+	p=&(frame->local_val[no_var]);
+	assert(p->type_val==EInt32Stack||p->type_val==0);
+	p->type_val=EInt32Stack;
+	p->val_int=val;
 }
 
 static uint32_t get_var_local(JFRAME *frame,uint16_t no_var)
@@ -44,11 +56,66 @@ static uint32_t get_var_local(JFRAME *frame,uint16_t no_var)
 	assert(frame->nb_var_local>=0);
 	assert(no_var>=0);
 	assert(no_var<frame->nb_var_local);
-	val=frame->var_local[no_var];
+	assert(frame->local_val[no_var].type_val==EInt32Stack);
+	val=frame->local_val[no_var].val_int;
 	return val;
 }
 
-static void affiche_frame(JFRAME *frame)
+static void push_stack_val_float(JFRAME *frame,float val)
+{
+	TYPEVALSTACK *p;
+	assert(frame!=NULL);
+	assert(frame->pos_stack>=0);
+	assert(frame->pos_stack<frame->nb_stack);
+	//frame->stack[frame->pos_stack]=val;
+	p=&(frame->stack_val[frame->pos_stack]);
+	p->type_val=EFloatStack;
+	p->val_float=val;
+	frame->pos_stack++;
+}
+
+static float pop_stack_float(JFRAME *frame)
+{
+	float val;
+	TYPEVALSTACK *p;
+	assert(frame!=NULL);
+	assert(frame->pos_stack>0);
+	p=&(frame->stack_val[frame->pos_stack-1]);
+	assert(p->type_val==EFloatStack);
+	val=p->val_float;
+	frame->pos_stack--;
+	return val;
+}
+
+static void set_var_local_float(JFRAME *frame,uint16_t no_var,float val)
+{
+	TYPEVALSTACK *p;
+	assert(frame!=NULL);
+	assert(frame->nb_var_local>0);
+	assert(no_var>=0);
+	assert(no_var<frame->nb_var_local);
+	p=&(frame->local_val[no_var]);
+	assert(p->type_val==EFloatStack||p->type_val==0);
+	//frame->var_local[no_var]=val;
+	p->type_val=EFloatStack;
+	p->val_float=val;
+}
+
+static float get_var_local_float(JFRAME *frame,uint16_t no_var)
+{
+	float val;
+	TYPEVALSTACK *p;
+	assert(frame!=NULL);
+	assert(frame->nb_var_local>=0);
+	assert(no_var>=0);
+	assert(no_var<frame->nb_var_local);
+	p=&(frame->local_val[no_var]);
+	assert(p->type_val==EFloatStack);
+	val=p->val_float;
+	return val;
+}
+
+void affiche_frame(JFRAME *frame)
 {
 	if(frame==NULL)
 	{
@@ -58,6 +125,7 @@ static void affiche_frame(JFRAME *frame)
 	{
 		int nb_var_max,nb_stack_max,pos_stack,pos_code;
 		int i;
+		TYPEVALSTACK *p;
 		nb_var_max=frame->nb_var_local;
 		nb_stack_max=frame->nb_stack;
 		pos_stack=frame->pos_stack;
@@ -65,13 +133,62 @@ static void affiche_frame(JFRAME *frame)
 		printf("var:");
 		for(i=0;i<nb_var_max;i++)
 		{
-			printf("%d ",frame->var_local[i]);
+			p=&(frame->local_val[i]);
+			if(p->type_val==EInt32Stack)
+			{
+				printf("%d ",p->val_int);
+			}
+			else if(p->type_val==EFloatStack)
+			{
+				printf("%f ",p->val_float);
+			}
+			else if(p->type_val==EDoubleStack1)
+			{
+				printf("%lf ",p->val_double);
+			}
+			else if(p->type_val==ELongStack1)
+			{
+				printf("%ld ",p->val_long);
+			}
+			else if(p->type_val==ERefStack)
+			{
+				printf("%x ",p->ref);
+			}
+			else
+			{
+				printf("X ");
+			}
 		}
 		printf("\n");
 		printf("stack (%d):",pos_stack);
 		for(i=0;i<nb_stack_max;i++)
 		{
-			printf("%d ",frame->stack[i]);
+			//printf("%d ",frame->stack[i]);
+			p=&(frame->stack_val[i]);
+			if(p->type_val==EInt32Stack)
+			{
+				printf("%d ",p->val_int);
+			}
+			else if(p->type_val==EFloatStack)
+			{
+				printf("%f ",p->val_float);
+			}
+			else if(p->type_val==EDoubleStack1)
+			{
+				printf("%lf ",p->val_double);
+			}
+			else if(p->type_val==ELongStack1)
+			{
+				printf("%ld ",p->val_long);
+			}
+			else if(p->type_val==ERefStack)
+			{
+				printf("%x ",p->ref);
+			}
+			else
+			{
+				printf("X ");
+			}
 		}
 		printf("\n");
 	}
@@ -117,13 +234,13 @@ void INSTR_LOAD(JCONTEXT *context,ETYPE type,int index_local,int param)
 
 void INSTR_STORE(JCONTEXT *context,ETYPE type,int index_local,int param)
 {
-	int32_t val;
 	uint16_t no_var;
 	assert(context!=NULL);
-		
-	val=pop_stack(context->frame);
+	
 	if(type==TINT)
-	{
+	{// type int
+		int32_t val;
+		val=pop_stack(context->frame);
 		if(param==0)
 		{
 			no_var=index_local;
@@ -139,6 +256,23 @@ void INSTR_STORE(JCONTEXT *context,ETYPE type,int index_local,int param)
 			assert(no_var>=0);
 			set_var_local(context->frame,no_var,val);
 			//INCR_INSTR(context);
+		}
+	}
+	else if(type==TFLOAT)
+	{// type float
+		float val;
+		val=pop_stack_float(context->frame);
+		if(param==0)
+		{
+			no_var=index_local;
+			assert(no_var>=0&&no_var<=3);
+			set_var_local_float(context->frame,no_var,val);
+		}
+		else
+		{
+			no_var=context->code_courant[0];
+			assert(no_var>=0);
+			set_var_local_float(context->frame,no_var,val);
 		}
 	}
 	else
@@ -289,6 +423,62 @@ void INSTR_FIN(JCONTEXT *context)
 {
 	assert(context!=NULL);
 	printf("Fin\n");
+}
+
+void INSTR_LDC(JCONTEXT *context,int type_op)
+{
+	assert(context!=NULL);
+
+	if(type_op==0||type_op==1)
+	{
+		uint8_t tag;
+		int pos=0;
+		unsigned int index1=0,index2=0;
+		CP_INFO * cp;
+
+		index1=context->code_courant[0];
+		assert(index1>=0);
+		assert(index1<context->classe->constant_pool_count);
+		if(type_op==0)
+		{
+			pos=index1;
+		}
+		else if(type_op==1)
+		{
+			index2=context->code_courant[1];
+			assert(index2>=0);
+			pos=(index1<<8)+index2;
+		}
+		else
+		{
+			assert(1==0);
+		}
+		assert(pos>0);
+		assert(pos<=context->classe->constant_pool_count);
+		cp=&(context->classe->constant_pool[pos-1]);
+		tag=cp->tag;
+		if(tag==CONSTANT_Float)
+		{
+			float f;
+			f=cp->val_float;
+			push_stack_val_float(context->frame,f);
+		}
+		else if(tag==CONSTANT_Integer)
+		{
+			int i;
+			i=cp->val_int;
+			push_stack_val(context->frame,i);
+		}
+		else
+		{
+			assert(1==0);
+		}
+	}
+	else
+	{
+		assert(1==0);
+	}
+	//printf("Fin\n");
 }
 
 int EST_FINI(JCONTEXT *context)

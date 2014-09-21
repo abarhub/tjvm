@@ -112,7 +112,7 @@ static JMETHOD_INFO * trouve_methode(JCLASS *classe,JSTR *nom_methode)
 	return NULL;
 }
 
-static void affiche_frame(JFRAME *frame)
+/*static void affiche_frame(JFRAME *frame)
 {
 	if(frame==NULL)
 	{
@@ -139,62 +139,6 @@ static void affiche_frame(JFRAME *frame)
 		}
 		printf("\n");
 	}
-}
-
-/*#define ICONST_0 0x03
-#define ICONST_1 0x04
-#define ICONST_2 0x05
-#define ICONST_3 0x06
-#define ICONST_4 0x07
-#define ICONST_5 0x08
-#define ISTORE_0 0x3B
-#define ISTORE_1 0x3C
-#define ISTORE_2 0x3D
-#define ISTORE_3 0x3E
-#define ILOAD_0 0x1A
-#define ILOAD_1 0x1B
-#define ILOAD_2 0x1C
-#define ILOAD_3 0x1D
-#define IADD 0x60
-#define RETURN 0xB1*/
-
-/*static void push_stack_val(JFRAME *frame,int32_t val)
-{
-	assert(frame!=NULL);
-	assert(frame->pos_stack>=0);
-	assert(frame->pos_stack<frame->nb_stack);
-	frame->stack[frame->pos_stack]=val;
-	frame->pos_stack++;
-}
-
-static int32_t pop_stack(JFRAME *frame)
-{
-	int32_t val;
-	assert(frame!=NULL);
-	assert(frame->pos_stack>0);
-	val=frame->stack[frame->pos_stack-1];
-	frame->pos_stack--;
-	return val;
-}
-
-static void set_var_local(JFRAME *frame,uint16_t no_var,uint32_t val)
-{
-	assert(frame!=NULL);
-	assert(frame->nb_var_local>0);
-	assert(no_var>=0);
-	assert(no_var<frame->nb_var_local);
-	frame->var_local[no_var]=val;
-}
-
-static uint32_t get_var_local(JFRAME *frame,uint16_t no_var)
-{
-	uint32_t val;
-	assert(frame!=NULL);
-	assert(frame->nb_var_local>=0);
-	assert(no_var>=0);
-	assert(no_var<frame->nb_var_local);
-	val=frame->var_local[no_var];
-	return val;
 }*/
 
 JFRAME *create_jframe(JCLASS *classe,CODE_ATTRIBUTE *code)
@@ -210,12 +154,13 @@ JFRAME *create_jframe(JCLASS *classe,CODE_ATTRIBUTE *code)
 	frame->nb_var_local=code->max_locals;
 	if(frame->nb_var_local>0)
 	{
-		frame->var_local=(uint32_t*)calloc(frame->nb_var_local,sizeof(uint32_t));
+		//frame->var_local=(uint32_t*)calloc(frame->nb_var_local,sizeof(uint32_t));
+		frame->local_val=(TYPEVALSTACK*)calloc(frame->nb_var_local,sizeof(TYPEVALSTACK));
 	}
 	frame->nb_stack=code->max_stack;
 	if(frame->nb_stack>0)
 	{
-		frame->stack=(uint32_t*)calloc(frame->nb_stack,sizeof(uint32_t));
+		//frame->stack=(uint32_t*)calloc(frame->nb_stack,sizeof(uint32_t));
 		frame->stack_val=(TYPEVALSTACK*)calloc(frame->nb_stack,sizeof(TYPEVALSTACK));
 	}
 	frame->len_code=code->code_length;

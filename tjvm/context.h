@@ -9,15 +9,23 @@ typedef enum ETypeVal ETYPEVAL;
 
 struct TypeValStack {
 	ETYPEVAL type_val;
+	union {
+	void *ref;
+	uint32_t val_int;
+	float val_float;
+	double val_double;
+	long val_long;
+	};
 };
 
 typedef struct TypeValStack TYPEVALSTACK;
 
 struct JFrame {
 	size_t nb_var_local;
-	uint32_t *var_local;
+	//uint32_t *var_local;
+	TYPEVALSTACK *local_val;
 	size_t nb_stack;
-	uint32_t *stack;
+	//uint32_t *stack;
 	TYPEVALSTACK *stack_val;
 	size_t pos_stack;
 	size_t pos_code;
@@ -68,6 +76,7 @@ struct jContext {
 
 	int (*EST_FINI)(struct jContext *context);
 	uint8_t (*DONNE_INSTR_SUIVANTE)(struct jContext *context);
+	void (*INSTR_LDC)(struct jContext *context,int type_op);
 };
 typedef struct jContext JCONTEXT;
 

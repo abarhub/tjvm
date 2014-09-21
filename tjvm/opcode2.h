@@ -34,4 +34,8 @@ void affiche_opcode(uint8_t *buf,int len);
 void remplit_opcode(JCONTEXT *context);
 void libere_opcode(JCONTEXT *context);
 
+void INSTR_LDC(JCONTEXT *context,int type_op);
+
+void affiche_frame(JFRAME *frame);
+
 #endif

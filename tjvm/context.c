@@ -30,6 +30,7 @@ JCONTEXT *new_context_run(JCLASS *classe,JMETHOD_INFO *methode,JENV *env)
 	tmp->INSTR_AUTRE=&INSTR_AUTRE;
 	tmp->EST_FINI=&EST_FINI;
 	tmp->DONNE_INSTR_SUIVANTE=&DONNE_INSTR_SUIVANTE;
+	tmp->INSTR_LDC=&INSTR_LDC;
 
 	tmp->code_courant=NULL;
 	tmp->opcode_courant=0;

@@ -1,4 +1,4 @@
-// généré le Tue Sep 16 22:40:37 CEST 2014
+// généré le Sun Sep 21 17:17:51 CEST 2014
 
 #include <stdio.h>
 #include <assert.h>
@@ -291,6 +291,9 @@ void execute(JCONTEXT *context) {
 			case LAND: context->INSTR_OPBIN(context,TLONG,TAND);break;
 			case LCONST_0: context->INSTR_CONST(context,TLONG,0,0);break;
 			case LCONST_1: context->INSTR_CONST(context,TLONG,1,0);break;
+			case LDC: context->INSTR_LDC(context,0);break;
+			case LDC_W: context->INSTR_LDC(context,1);break;
+			case LDC2_W: context->INSTR_LDC(context,2);break;
 			case LDIV: context->INSTR_OPBIN(context,TLONG,TDIV);break;
 			case LLOAD: context->INSTR_LOAD(context,TLONG,0,1);break;
 			case LLOAD_0: context->INSTR_LOAD(context,TLONG,0,0);break;
