@@ -141,7 +141,7 @@ static void affiche_frame(JFRAME *frame)
 	}
 }
 
-#define ICONST_0 0x03
+/*#define ICONST_0 0x03
 #define ICONST_1 0x04
 #define ICONST_2 0x05
 #define ICONST_3 0x06
@@ -156,9 +156,9 @@ static void affiche_frame(JFRAME *frame)
 #define ILOAD_2 0x1C
 #define ILOAD_3 0x1D
 #define IADD 0x60
-#define RETURN 0xB1
+#define RETURN 0xB1*/
 
-static void push_stack_val(JFRAME *frame,int32_t val)
+/*static void push_stack_val(JFRAME *frame,int32_t val)
 {
 	assert(frame!=NULL);
 	assert(frame->pos_stack>=0);
@@ -195,6 +195,35 @@ static uint32_t get_var_local(JFRAME *frame,uint16_t no_var)
 	assert(no_var<frame->nb_var_local);
 	val=frame->var_local[no_var];
 	return val;
+}*/
+
+JFRAME *create_jframe(JCLASS *classe,CODE_ATTRIBUTE *code)
+{
+	JFRAME *frame;
+
+	assert(classe!=NULL);
+	assert(code!=NULL);
+
+	frame=(JFRAME*)calloc(1,sizeof(JFRAME));
+	frame->classe=classe;
+	frame->methode=code;
+	frame->nb_var_local=code->max_locals;
+	if(frame->nb_var_local>0)
+	{
+		frame->var_local=(uint32_t*)calloc(frame->nb_var_local,sizeof(uint32_t));
+	}
+	frame->nb_stack=code->max_stack;
+	if(frame->nb_stack>0)
+	{
+		frame->stack=(uint32_t*)calloc(frame->nb_stack,sizeof(uint32_t));
+		frame->stack_val=(TYPEVALSTACK*)calloc(frame->nb_stack,sizeof(TYPEVALSTACK));
+	}
+	frame->len_code=code->code_length;
+	frame->code=code->code;
+	frame->pos_code=0;
+	frame->pos_stack=0;
+
+	return frame;
 }
 
 void exec(JCLASS *classe,JMETHOD_INFO *tmp,JENV *env)
@@ -218,7 +247,7 @@ void exec(JCLASS *classe,JMETHOD_INFO *tmp,JENV *env)
 	}
 	else
 	{
-		context=new_context_run(classe,tmp);
+		context=new_context_run(classe,tmp,env);
 		attr_code=NULL;
 		attr=tmp->attributes;
 		for(i=0;i<tmp->attributes_count;i++)
@@ -235,23 +264,7 @@ void exec(JCLASS *classe,JMETHOD_INFO *tmp,JENV *env)
 		assert(code!=NULL);
 		code_bin=code->code;
 		assert(code_bin!=NULL);
-		frame=(JFRAME*)calloc(1,sizeof(JFRAME));
-		frame->classe=classe;
-		frame->methode=code;
-		frame->nb_var_local=code->max_locals;
-		if(frame->nb_var_local>0)
-		{
-			frame->var_local=(uint32_t*)calloc(frame->nb_var_local,sizeof(uint32_t));
-		}
-		frame->nb_stack=code->max_stack;
-		if(frame->nb_stack>0)
-		{
-			frame->stack=(uint32_t*)calloc(frame->nb_stack,sizeof(uint32_t));
-		}
-		frame->len_code=code->code_length;
-		frame->code=code->code;
-		frame->pos_code=0;
-		frame->pos_stack=0;
+		frame=create_jframe(classe,code);
 		context->frame=frame;
 
 		if(debug)

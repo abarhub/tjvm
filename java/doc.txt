@@ -1,0 +1,38 @@
+spec de Java
+http://docs.oracle.com/javase/7/docs/technotes/tools/windows/javac.html
+
+format des classes java
+https://fr.wikipedia.org/wiki/Class_%28format_de_fichier%29
+https://en.wikipedia.org/wiki/Java_class_file
+http://docs.oracle.com/javase/specs/jvms/se7/html/jvms-4.html
+
+http://www.tutorialspoint.com/c_standard_library/c_function_fread.htm
+http://msdn.microsoft.com/fr-fr/library/kt0etdcs.aspx
+https://stackoverflow.com/questions/2182002/convert-big-endian-to-little-endian-in-c-without-using-provided-func
+
+https://github.com/ingokegel/jclasslib
+
+c portable:
+http://nadeausoftware.com/articles/2012/01/c_c_tip_how_use_compiler_predefined_macros_detect_operating_system
+
+
+http://c-faq.com/decl/mutrefstructs.html
+
+unicode en c :
+https://stackoverflow.com/questions/3130979/how-to-output-unicode-strings-on-the-windows-console
+https://web.archive.org/web/20130101094000/http://blogs.msdn.com/b/michkap/archive/2008/03/18/8306597.aspx
+
+GC :
+http://www.memorymanagement.org/
+http://gchandbook.org/
+http://www.ravenbrook.com/project/mps/
+http://iecc.com/gclist/GC-faq.html
+http://www.cs.kent.ac.uk/people/staff/rej/gc.html
+http://www.infoq.com/fr/articles/Java_Garbage_Collection_Distilled
+
+eclipse compiler :
+https://stackoverflow.com/questions/3061654/what-is-the-difference-between-javac-and-the-eclipse-compiler
+http://blog.deepakazad.com/2010/05/ecj-eclipse-java-compiler.html
+http://download.eclipse.org/eclipse/downloads/
+http://mvnrepository.com/artifact/org.eclipse.jdt.core.compiler/ecj
+

@@ -14,6 +14,7 @@ static void push_stack_val(JFRAME *frame,int32_t val)
 	assert(frame->pos_stack>=0);
 	assert(frame->pos_stack<frame->nb_stack);
 	frame->stack[frame->pos_stack]=val;
+	frame->stack_val[frame->pos_stack].type_val=EInt32Stack;
 	frame->pos_stack++;
 }
 
@@ -293,12 +294,12 @@ void INSTR_FIN(JCONTEXT *context)
 int EST_FINI(JCONTEXT *context)
 {
 	assert(context!=NULL);
-	return context->fini;
+	return context->fini||tjvm_env_is_error(context->env);
 }
 
 uint8_t DONNE_INSTR_SUIVANTE(JCONTEXT *context)
 {
-	int pos;
+	size_t pos;
 	JFRAME *frame;
 	assert(context!=NULL);
 	frame=context->frame;
@@ -311,7 +312,7 @@ uint8_t DONNE_INSTR_SUIVANTE(JCONTEXT *context)
 
 void INCR_INSTR(JCONTEXT *context)
 {
-	int pos;
+	size_t pos;
 	JFRAME *frame;
 	assert(context!=NULL);
 	frame=context->frame;
@@ -325,7 +326,7 @@ void INCR_INSTR(JCONTEXT *context)
 
 void INCR_INSTR2(JCONTEXT *context,size_t nb_inst)
 {
-	int pos;
+	size_t pos;
 	JFRAME *frame;
 	assert(context!=NULL);
 	assert(nb_inst>0);

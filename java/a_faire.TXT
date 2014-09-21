@@ -1,0 +1,4 @@
+A faire :
+-finir de gérer les opcodes
+-prendre en compte les types float, double, long, array, reference
+-faire la vérification des classes et des instructions

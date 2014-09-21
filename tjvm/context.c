@@ -5,15 +5,18 @@
 #include "context.h"
 #include "opcode2.h"
 
-JCONTEXT *new_context_run(JCLASS *classe,JMETHOD_INFO *methode)
+JCONTEXT *new_context_run(JCLASS *classe,JMETHOD_INFO *methode,JENV *env)
 {
 	JCONTEXT * tmp=NULL;
 
 	assert(classe!=NULL);
 	assert(methode!=NULL);
+	assert(env!=NULL);
+
 	tmp=(JCONTEXT*)calloc(1,sizeof(JCONTEXT));
 	tmp->classe=classe;
 	tmp->methode=methode;
+	tmp->env=env;
 
 	tmp->INSTR_LOAD=&INSTR_LOAD;
 	tmp->INSTR_STORE=&INSTR_STORE;

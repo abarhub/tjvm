@@ -2,15 +2,25 @@
 #define CONTEXT_H
 
 #include "jclasse.h"
+#include "jenv.h"
 
+enum ETypeVal {EInt32Stack=1,EFloatStack=2,ELongStack1=3,ELongStack2=4,EDoubleStack1=5,EDoubleStack2=6,ERefStack=7};
+typedef enum ETypeVal ETYPEVAL;
+
+struct TypeValStack {
+	ETYPEVAL type_val;
+};
+
+typedef struct TypeValStack TYPEVALSTACK;
 
 struct JFrame {
-	unsigned int nb_var_local;
+	size_t nb_var_local;
 	uint32_t *var_local;
-	unsigned int nb_stack;
+	size_t nb_stack;
 	uint32_t *stack;
-	unsigned int pos_stack;
-	unsigned int pos_code;
+	TYPEVALSTACK *stack_val;
+	size_t pos_stack;
+	size_t pos_code;
 	JCLASS *classe;
 	CODE_ATTRIBUTE *methode;
 	//JMETHOD_INFO *methode_attr;
@@ -37,6 +47,7 @@ struct jContext {
 	int fini;
 	uint8_t opcode_courant;
 	uint8_t *code_courant;
+	JENV *env;
 
 	// les methodes
 	void (*INSTR_LOAD)(struct jContext *context,ETYPE type,int index_local,int param);
@@ -60,6 +71,6 @@ struct jContext {
 };
 typedef struct jContext JCONTEXT;
 
-JCONTEXT *new_context_run(JCLASS *classe,JMETHOD_INFO *methode);
+JCONTEXT *new_context_run(JCLASS *classe,JMETHOD_INFO *methode,JENV *env);
 
 #endif
