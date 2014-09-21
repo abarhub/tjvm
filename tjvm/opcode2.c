@@ -8,7 +8,7 @@
 
 void affiche_opcode(uint8_t *buf,int len);
 
-static void push_stack_val(JFRAME *frame,int32_t val)
+static void push_stack_val_int(JFRAME *frame,int32_t val)
 {
 	TYPEVALSTACK *p;
 	assert(frame!=NULL);
@@ -22,7 +22,7 @@ static void push_stack_val(JFRAME *frame,int32_t val)
 	frame->pos_stack++;
 }
 
-static int32_t pop_stack(JFRAME *frame)
+static int32_t pop_stack_int(JFRAME *frame)
 {
 	int32_t val;
 	TYPEVALSTACK *p;
@@ -35,7 +35,7 @@ static int32_t pop_stack(JFRAME *frame)
 	return val;
 }
 
-static void set_var_local(JFRAME *frame,uint16_t no_var,uint32_t val)
+static void set_var_local_int(JFRAME *frame,uint16_t no_var,uint32_t val)
 {
 	TYPEVALSTACK *p;
 	assert(frame!=NULL);
@@ -49,7 +49,7 @@ static void set_var_local(JFRAME *frame,uint16_t no_var,uint32_t val)
 	p->val_int=val;
 }
 
-static uint32_t get_var_local(JFRAME *frame,uint16_t no_var)
+static uint32_t get_var_local_int(JFRAME *frame,uint16_t no_var)
 {
 	uint32_t val;
 	assert(frame!=NULL);
@@ -199,15 +199,15 @@ void INSTR_LOAD(JCONTEXT *context,ETYPE type,int index_local,int param)
 	assert(context!=NULL);
 
 	if(type==TINT)
-	{
+	{// le type int
 		if(param==0)
 		{
 			uint16_t no_var;
 			uint32_t val=0;
 			no_var=index_local;
 			assert(no_var>=0&&no_var<=3);
-			val=get_var_local(context->frame,no_var);
-			push_stack_val(context->frame,val);
+			val=get_var_local_int(context->frame,no_var);
+			push_stack_val_int(context->frame,val);
 			//INCR_INSTR(context);
 		}
 		else
@@ -219,9 +219,31 @@ void INSTR_LOAD(JCONTEXT *context,ETYPE type,int index_local,int param)
 			//no_var=DONNE_INSTR_SUIVANTE(context);
 			no_var=context->code_courant[0];
 			assert(no_var>=0);
-			val=get_var_local(context->frame,no_var);
-			push_stack_val(context->frame,val);
+			val=get_var_local_int(context->frame,no_var);
+			push_stack_val_int(context->frame,val);
 			//INCR_INSTR(context);
+		}
+	}
+	else if(type==TFLOAT)
+	{// le type float
+		if(param==0)
+		{
+			uint16_t no_var;
+			float val=0;
+			no_var=index_local;
+			assert(no_var>=0&&no_var<=3);
+			val=get_var_local_float(context->frame,no_var);
+			push_stack_val_float(context->frame,val);
+		}
+		else
+		{
+			uint8_t no;
+			uint16_t no_var;
+			float val=0;
+			no_var=context->code_courant[0];
+			assert(no_var>=0);
+			val=get_var_local_float(context->frame,no_var);
+			push_stack_val_float(context->frame,val);
 		}
 	}
 	else
@@ -240,12 +262,12 @@ void INSTR_STORE(JCONTEXT *context,ETYPE type,int index_local,int param)
 	if(type==TINT)
 	{// type int
 		int32_t val;
-		val=pop_stack(context->frame);
+		val=pop_stack_int(context->frame);
 		if(param==0)
 		{
 			no_var=index_local;
 			assert(no_var>=0&&no_var<=3);
-			set_var_local(context->frame,no_var,val);
+			set_var_local_int(context->frame,no_var,val);
 			//INCR_INSTR(context);
 		}
 		else
@@ -254,7 +276,7 @@ void INSTR_STORE(JCONTEXT *context,ETYPE type,int index_local,int param)
 			//no_var=DONNE_INSTR_SUIVANTE(context);
 			no_var=context->code_courant[0];
 			assert(no_var>=0);
-			set_var_local(context->frame,no_var,val);
+			set_var_local_int(context->frame,no_var,val);
 			//INCR_INSTR(context);
 		}
 	}
@@ -284,17 +306,17 @@ void INSTR_STORE(JCONTEXT *context,ETYPE type,int index_local,int param)
 void INSTR_CONST(JCONTEXT *context,ETYPE type,int val,int param)
 {
 	//uint32_t val0=0;
-	int32_t val0=0;
 
 	assert(context!=NULL);
 
 	if(type==TINT)
 	{
+		int32_t val0=0;
 		if(param==0)
 		{
 			val0=val;
 			assert(val0>=-1&&val0<=5);
-			push_stack_val(context->frame,val0);
+			push_stack_val_int(context->frame,val0);
 			//INCR_INSTR(context);
 		}
 		else
@@ -302,23 +324,43 @@ void INSTR_CONST(JCONTEXT *context,ETYPE type,int val,int param)
 			//INCR_INSTR(context);
 			//val0=DONNE_INSTR_SUIVANTE(context);
 			val0=context->code_courant[0];
-			push_stack_val(context->frame,val0);
+			push_stack_val_int(context->frame,val0);
 			//INCR_INSTR(context);
 		}
 	}
 	else if(type==TBYTE)
 	{
+		int32_t val0=0;
 		if(param==1)
 		{
 			//INCR_INSTR(context);
 			//val0=DONNE_INSTR_SUIVANTE(context);
 			val0=context->code_courant[0];
-			push_stack_val(context->frame,val0);
+			push_stack_val_int(context->frame,val0);
 			//INCR_INSTR(context);
 		}
 		else
 		{
 			assert(1==0);
+		}
+	}
+	else if(type==TFLOAT)
+	{
+		float val0=0.0;
+		if(param==0)
+		{
+			assert(val>=0&&val<=2);
+			val0=val;
+			push_stack_val_float(context->frame,val0);
+			//INCR_INSTR(context);
+		}
+		else
+		{
+			//INCR_INSTR(context);
+			//val0=DONNE_INSTR_SUIVANTE(context);
+			val0=context->code_courant[0];
+			push_stack_val_float(context->frame,val0);
+			//INCR_INSTR(context);
 		}
 	}
 	else
@@ -342,8 +384,8 @@ void INSTR_OPBIN(JCONTEXT *context,ETYPE type,EOPERATEUR operateur)
 	int32_t val,val2;
 	if(type==TINT)
 	{
-		val=pop_stack(context->frame);
-		val2=pop_stack(context->frame);
+		val=pop_stack_int(context->frame);
+		val2=pop_stack_int(context->frame);
 		switch(operateur)
 		{
 		case TADD:
@@ -388,7 +430,7 @@ void INSTR_OPBIN(JCONTEXT *context,ETYPE type,EOPERATEUR operateur)
 		default:
 			assert(1==0);
 		}
-		push_stack_val(context->frame,val);
+		push_stack_val_int(context->frame,val);
 	}
 	else
 	{
@@ -467,7 +509,7 @@ void INSTR_LDC(JCONTEXT *context,int type_op)
 		{
 			int i;
 			i=cp->val_int;
-			push_stack_val(context->frame,i);
+			push_stack_val_int(context->frame,i);
 		}
 		else
 		{
