@@ -2,3 +2,41 @@ A faire :
 -finir de gérer les opcodes
 -prendre en compte les types float, double, long, array, reference
 -faire la vérification des classes et des instructions
+
+
+A traiter :
+* int
+-load/store : Ok
+-operateurs binaires : Ok
+-operateur unaire : 
+-sauts :
+-conversions : 
+* float :
+-load/store : Ok
+-operateurs binaires : 
+-operateur unaire : 
+-sauts :
+-conversions : 
+* double
+-load/store : 
+-operateurs binaires : 
+-operateur unaire : 
+-sauts :
+-conversions : 
+* long
+-load/store : 
+-operateurs binaires : 
+-operateur unaire : 
+-sauts :
+-conversions :
+* tableaux :
+-load/store : 
+
+* Autres :
+-gestion des exceptions
+-instructions spaciales :
+	-wide
+	-swap
+	-etc...
+	
+	
