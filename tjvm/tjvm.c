@@ -14,7 +14,7 @@
 //int _tmain(int argc, _TCHAR* argv[])
 int main(int argc, char* argv[])
 {
-	char *fichier="C:\\Users\\Alain\\Documents\\Visual Studio 2010\\Projects\\tjvm\\java\\Hello.class";
+	char *fichier="..\\java\\Hello.class";//"C:\\Users\\Alain\\Documents\\Visual Studio 2010\\Projects\\tjvm\\java\\Hello.class";
 	JCLASS* res;
 
 	res=lecture(fichier);
